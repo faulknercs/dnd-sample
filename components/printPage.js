@@ -1,5 +1,8 @@
+import { useState } from "react";
 import styled from "styled-components";
 import Actions from "./actions";
+import DraggableLayout from "./draggableLayout";
+import DraggablePhoto from "./draggablePhoto";
 
 const Wrapper = styled.div`
   width: 600px;
@@ -41,28 +44,38 @@ const PrintPhoto = styled.div`
 `;
 
 export default function PrintPage({ data }) {
+  const [images, setImages] = useState(data);
+
   return (
     <>
       <Wrapper>
-        {Object.values(data).map((entry, i) => {
-          return (
-            <PrintWrapper key={i}>
-              <Header>
-                <Title>{entry.title}</Title>
-                <Actions />
-              </Header>
-              <PageLayout>
-                {entry.images.map((image) => {
-                  return (
-                    <PrintPhoto key={image}>
-                      <img src={image} alt="" />
-                    </PrintPhoto>
-                  );
-                })}
-              </PageLayout>
-            </PrintWrapper>
-          );
-        })}
+        <DraggableLayout items={images} onItemsChange={(e) => {
+          console.log('on change', e)
+          setImages(e)
+        }}>
+          {images.map((entry, i) => {
+            console.log('rere')
+            return (
+              <PrintWrapper key={entry.title+ i}>
+                <Header>
+                  <Title>{entry.title}</Title>
+                  <Actions />
+                </Header>
+                <PageLayout>
+                  {entry.images.map((image, j) => {
+                    return (
+                      <PrintPhoto key={image+j}>
+                        <DraggablePhoto image={image} pageIndex={i} imageIndex={j}>
+                          <img src={image} alt="" />
+                        </DraggablePhoto>
+                      </PrintPhoto>
+                    );
+                  })}
+                </PageLayout>
+              </PrintWrapper>
+            );
+          })}
+        </DraggableLayout>
       </Wrapper>
     </>
   );
