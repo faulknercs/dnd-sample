@@ -1,17 +1,18 @@
 import { useState } from 'react';
 import { DndContext, DragOverlay } from '@dnd-kit/core';
+import { snapCenterToCursor } from '@dnd-kit/modifiers';
 import styled, { keyframes } from "styled-components";
 
 const PreviewAnimation = keyframes`
   0% {
     height: inherit;
-    width: 250px;
-    transform: translate3d(0px, 0px, 0) scale(1);
+    width: 160px;
+    transform: translate3d(-5px, -5px, 0) scale(1);
   }
   100% {
     height: 150px;
     width: 150px;
-    transform: translate3d(10px, 10px, 0) scale(1.025);
+    transform: translate3d(0px, 0px, 0) scale(1.025);
   }
 `;
 
@@ -20,9 +21,10 @@ const DragPreview = styled.div`
   border-radius: 50%;
   height: 150px;
   width: 150px;
+  max-width: 160px;
   overflow: hidden;
 
-  transform: translate3d(10px, 10px, 0) scale(1.025);
+  transform: translate3d(0px, 0px, 0) scale(1.025);
   animation: ${PreviewAnimation} 550ms cubic-bezier(0.18, 0.67, 0.6, 1.22);
   box-shadow: 0 0 0 1px rgba(63, 63, 68, 0.05),
     0 1px 6px 0 rgba(34, 33, 81, 0.3);
@@ -30,6 +32,7 @@ const DragPreview = styled.div`
 
   img {
     height: inherit;
+    object-fit: cover;
   }
 `;
 
@@ -41,9 +44,6 @@ export default function DraggableLayout({
   const [activeDragItem, setActiveDragItem] = useState(null);
 
   function onDragStart(e) {
-
-    console.log('drag start', e)
-
     if (!e.active) {
       return;
     }
@@ -52,8 +52,6 @@ export default function DraggableLayout({
   }
 
   function onDragEnd(e) {
-    console.log('drag end', e)
-
     if(e.over) {
       const target = e.over.data.current;
       const dragging = e.active.data.current;
@@ -61,7 +59,7 @@ export default function DraggableLayout({
       const targetPage = target.pageIndex;
       const fromPage = dragging.pageIndex;
 
-      const newImages = [...items]
+      const newImages = [...items];
 
       [
         newImages[targetPage].images[target.imageIndex], 
@@ -75,7 +73,6 @@ export default function DraggableLayout({
       onItemsChange(newImages);
     }
 
-
     setActiveDragItem(null);
   }
 
@@ -83,7 +80,7 @@ export default function DraggableLayout({
     <DndContext onDragStart={onDragStart} onDragEnd={onDragEnd}>
       {children}
 
-      <DragOverlay dropAnimation={null}>
+      <DragOverlay dropAnimation={null} modifiers={[snapCenterToCursor]}>
         {activeDragItem ? (
           <DragPreview>
             <img src={activeDragItem.image} alt="" />

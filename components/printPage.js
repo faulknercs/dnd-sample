@@ -54,9 +54,8 @@ export default function PrintPage({ data }) {
           setImages(e)
         }}>
           {images.map((entry, i) => {
-            console.log('rere')
             return (
-              <PrintWrapper key={entry.title+ i}>
+              <PrintWrapper key={i}>
                 <Header>
                   <Title>{entry.title}</Title>
                   <Actions />
