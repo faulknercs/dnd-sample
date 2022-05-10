@@ -64,9 +64,7 @@ export default function PrintPage({ data }) {
                   {entry.images.map((image, j) => {
                     return (
                       <PrintPhoto key={image+j}>
-                        <DraggablePhoto image={image} pageIndex={i} imageIndex={j}>
-                          <img src={image} alt="" />
-                        </DraggablePhoto>
+                        <DraggablePhoto image={image} pageIndex={i} imageIndex={j} />
                       </PrintPhoto>
                     );
                   })}

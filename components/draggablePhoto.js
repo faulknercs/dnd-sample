@@ -25,8 +25,7 @@ const Draggable = styled.div`
 export default function DraggablePhoto({
   image,
   imageIndex,
-  pageIndex,
-  children
+  pageIndex
 }) {
   const imageDescr = {
     id: image,
@@ -37,8 +36,18 @@ export default function DraggablePhoto({
     }
   }
 
-  const { active, isOver, setNodeRef: setDroppableRef, over } = useDroppable(imageDescr);
-  const { isDragging, attributes, listeners, setNodeRef } = useDraggable(imageDescr);
+  const { 
+    active, 
+    isOver, 
+    setNodeRef: setDroppableRef, 
+    over 
+  } = useDroppable(imageDescr);
+  const { 
+    isDragging, 
+    attributes, 
+    listeners, 
+    setNodeRef 
+  } = useDraggable(imageDescr);
 
   return (
     <DropZone ref={setDroppableRef} isOver={isOver && active?.id !== over?.id}>
@@ -48,7 +57,7 @@ export default function DraggablePhoto({
         {...attributes}
         isDragging={isDragging}
       >
-        {children}
+        <img src={image} alt="" />
       </Draggable>
     </DropZone>
   );

@@ -5,13 +5,9 @@ import styled, { keyframes } from "styled-components";
 
 const PreviewAnimation = keyframes`
   0% {
-    height: inherit;
-    width: 160px;
     transform: translate3d(-5px, -5px, 0) scale(1);
   }
   100% {
-    height: 150px;
-    width: 150px;
     transform: translate3d(0px, 0px, 0) scale(1.025);
   }
 `;
@@ -29,10 +25,12 @@ const DragPreview = styled.div`
   box-shadow: 0 0 0 1px rgba(63, 63, 68, 0.05),
     0 1px 6px 0 rgba(34, 33, 81, 0.3);
   cursor: grabbing;
+  margin: auto;
 
   img {
-    height: inherit;
     object-fit: cover;
+    height: 150px;
+    width: 150px;
   }
 `;
 
@@ -43,48 +41,40 @@ export default function DraggableLayout({
 }) {
   const [activeDragItem, setActiveDragItem] = useState(null);
 
-  function onDragStart(e) {
-    if (!e.active) {
-      return;
-    }
-
-    setActiveDragItem(e.active.data.current);
-  }
-
   function onDragEnd(e) {
-    if(e.over) {
+    if (e.over) {
       const target = e.over.data.current;
       const dragging = e.active.data.current;
-
-      const targetPage = target.pageIndex;
-      const fromPage = dragging.pageIndex;
-
-      const newImages = [...items];
+      const newItems = [...items];
 
       [
-        newImages[targetPage].images[target.imageIndex], 
-        newImages[fromPage].images[dragging.imageIndex]
-      ] 
-      = [
-        items[fromPage].images[dragging.imageIndex], 
-        items[targetPage].images[target.imageIndex]
+        newItems[target.pageIndex].images[target.imageIndex],
+        newItems[dragging.pageIndex].images[dragging.imageIndex]
+      ] = [
+        items[dragging.pageIndex].images[dragging.imageIndex],
+        items[target.pageIndex].images[target.imageIndex]
       ];
 
-      onItemsChange(newImages);
+      onItemsChange(newItems);
     }
 
     setActiveDragItem(null);
   }
 
   return (
-    <DndContext onDragStart={onDragStart} onDragEnd={onDragEnd}>
+    <DndContext onDragStart={e => setActiveDragItem(e.active.data.current)} onDragEnd={onDragEnd}>
       {children}
 
-      <DragOverlay dropAnimation={null} modifiers={[snapCenterToCursor]}>
+      <DragOverlay
+        dropAnimation={{ duration: 300, easing: 'ease-in-out', dragSourceOpacity: 0.7 }}
+        modifiers={[snapCenterToCursor]}
+      >
         {activeDragItem ? (
-          <DragPreview>
-            <img src={activeDragItem.image} alt="" />
-          </DragPreview>
+          <div>
+            <DragPreview>
+              <img src={activeDragItem.image} alt="" />
+            </DragPreview>
+          </div>
         ) : null}
       </DragOverlay>
     </DndContext>
